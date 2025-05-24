@@ -32,7 +32,10 @@ const accountSchema = mongoose.Schema({
         required: true
     
     },
-    states:{
+    addressLine2:{
+        type: String,
+    },
+    state:{
         type: String,
         required: true
     },
@@ -56,12 +59,12 @@ govtId:{
 },
  nationality :{
     type: String,
-    required: [true, "Nationality is required"],
+    required: [true, "Country is required"],
     enum: ["Nigeria", "Ghana", "Other"]
 },
 citizenship :{
     type: String,
-    required: [true, "Nationality is required"],
+    required: [true, "Citizenship is required"],
     enum: ["Nigeria", "Ghana", "Other"]
 },
     balance: { 

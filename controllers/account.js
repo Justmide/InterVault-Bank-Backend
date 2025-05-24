@@ -1,7 +1,6 @@
 const account = require("../models/account")
 const UserModel = require("../models/user"); 
 const card = require('../models/card'); // Adjust the path if needed
-
 const axios = require("axios");
 const sendAccountNotification = require("../services/nodemailer/sendAccountNotification");
 
@@ -26,22 +25,26 @@ const generate_account_number = async () => {
 const generate_card_number = async () => {
     let cardNumber;
     let isUnique = false;
-
+  
     while (!isUnique) {
-        cardNumber = Math.floor(1000000000000000 + Math.random() * 900000000000000).toString();
-        const existingCard = await card.findOne({ cardNumber });
-        if (!existingCard) {
-            isUnique = true;
-        }
-    } 
-
+      // Generate 16-digit number
+      cardNumber = Math.floor(1000000000000000 + Math.random() * 9000000000000000).toString();
+  
+      // Check if it already exists
+      const existingCard = await card.findOne({ cardNumber });
+      if (!existingCard) {
+        isUnique = true;
+      }
+    }
+  
     return cardNumber;
-};
+  };
+  
 
 const createAccount = async (req, res) => {
-    try {
-        const { userId, accountType, phone, address,states, city, zipcode, dob, gender, verification, nin, govtId, nationality, citizenship } = req.body;
+    const { userId, accountType = "savings", phone, address,state, city, zipcode, dob, gender, verification, nin, govtId, nationality, citizenship } = req.body;
 
+    try {
         // Check if user exists
         const user = await UserModel.findById(userId);
         if (!user) {
@@ -58,10 +61,10 @@ const createAccount = async (req, res) => {
         const newAccount = new account({
             userId,
             accountNumber,
-            accountType: "savings",
+            accountType,
             phone, 
             address,
-            states, 
+            state, 
             city, 
             zipcode, 
             dob, 
@@ -89,14 +92,15 @@ const createAccount = async (req, res) => {
 
         await newCreditCard.save();
 
-        await sendAccountNotification(user.email, user.firstName, user.accountNumber)
-
+        await sendAccountNotification(user.email, user.firstName, accountNumber)
+        
         return res.status(201).json({
             status: "Success",
             message: "Account and Credit Card Created Successfully",
             account: newAccount,
             card: newCreditCard
         });
+        
 
     } catch (error) {
         console.error("Error:", error);
@@ -107,7 +111,6 @@ const createAccount = async (req, res) => {
         });
     }
 };
-
 
 
 // THIS IS STRICTLY FOR ADMIN 

@@ -14,8 +14,10 @@ app.use(cors());
 
 const AuthRoutes = require("./routes/authRoute");
 const CreateAccount = require("./routes/accountRoute");
+const CardRoute = require("./routes/cardRoute")
 
 app.use("/api/v1/auth", AuthRoutes);
 app.use("/api/v1/account", CreateAccount);
+app.use("/api/v1/user", CardRoute)
 
 module.exports = app;
